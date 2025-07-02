@@ -17,7 +17,6 @@ export default function ProductItem({ item }: ItemProps) {
 
   const addToCart = (id: number) => {
     
-    console.log(`Товар с ID ${id} добавлен в корзину`);
   };
 
   return (

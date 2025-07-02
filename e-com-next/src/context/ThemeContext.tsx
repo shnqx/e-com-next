@@ -1,8 +1,8 @@
 'use client'
 import { createContext, useContext, useState } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import darkTheme from "@/theme-dark";
-import lightTheme from "@/theme-light";
+import darkTheme from "@/lib/theme-dark";
+import lightTheme from "@/lib/theme-light";
 
 const ThemeModeContext = createContext({
   toggleTheme: () => {},

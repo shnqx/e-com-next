@@ -1,7 +1,13 @@
+import { Table, TableCell } from "@mui/material";
+
 export default function Cart() {
   return (
     <>
-    cart
+      <Table>
+        <TableCell>
+
+        </TableCell>
+      </Table>
     </>
   );
 }
