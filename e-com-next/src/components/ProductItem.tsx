@@ -1,6 +1,8 @@
 'use client'
-import { Card, CardContent, CardMedia, Typography, Button, Box } from "@mui/material";
+import { useState } from "react";
+import { Card, CardContent, CardMedia, Typography, Button, Box, Snackbar } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { useAuth } from "@/app/api/auth/hooks/useAuth";
 
 interface ItemProps {
   item: {
@@ -12,11 +14,38 @@ interface ItemProps {
   };
 }
 
+const ECOMNEXT_CART_KEY = "ecomnext_cart";
+
 export default function ProductItem({ item }: ItemProps) {
+  const { user } = useAuth();
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
 
+  const addToCart = async (id: number) => {
+    const userId = user?.id;
 
-  const addToCart = (id: number) => {
-    
+    if (userId) {
+      // Пользователь авторизован — пишем в базу через API
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: id, userId }),
+      });
+      if (res.ok) {
+        setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
+      } else {
+        setSnackbar({ open: true, message: "Ошибка при добавлении в корзину" });
+      }
+    } else {
+      // Гость — сохраняем в localStorage
+      const cart = JSON.parse(localStorage.getItem(ECOMNEXT_CART_KEY) || "[]");
+      if (!cart.includes(id)) {
+        cart.push(id);
+        localStorage.setItem(ECOMNEXT_CART_KEY, JSON.stringify(cart));
+        setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
+      } else {
+        setSnackbar({ open: true, message: "Товар уже в корзине!" });
+      }
+    }
   };
 
   return (
@@ -49,6 +78,13 @@ export default function ProductItem({ item }: ItemProps) {
           </Button>
         </Box>
       </CardContent>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      />
     </Card>
   );
 }

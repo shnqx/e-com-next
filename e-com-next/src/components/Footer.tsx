@@ -8,7 +8,6 @@ export default function Footer() {
         padding: "16px",
         borderTop: `1px solid ${theme.palette.divider}`,
         marginTop: "auto",
-        textAlign: "center",
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.text.primary,
         minHeight: "60px",
