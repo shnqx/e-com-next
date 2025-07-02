@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material/Grid";
+import Grid from "@mui/material/Grid";
 import ProductItem from "./ProductItem";
 
 // Временные данные для теста
