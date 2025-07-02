@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardContent, CardMedia, Typography, Button, Box } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
@@ -12,6 +13,13 @@ interface ItemProps {
 }
 
 export default function ProductItem({ item }: ItemProps) {
+
+
+  const addToCart = (id: number) => {
+    
+    console.log(`Товар с ID ${id} добавлен в корзину`);
+  };
+
   return (
     <Card>
       {item.photo && (
@@ -36,6 +44,7 @@ export default function ProductItem({ item }: ItemProps) {
           <Button
             variant="outlined"
             startIcon={<AddShoppingCartIcon color="primary" />}
+            onClick={() => addToCart(item.id)}
           >
             В корзину
           </Button>
