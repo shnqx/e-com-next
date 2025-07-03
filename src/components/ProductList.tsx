@@ -22,11 +22,11 @@ export default function ProductList() {
 
   return (
     <Box>
-      <Grid marginTop="10px" container spacing={2}>
+      <Grid container spacing={2} margin="10px">
         {products?.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item.id}>
-            <ProductItem item={item} />
-          </Grid>
+          // <Grid item key={item.id}>
+            <ProductItem key={item.id} item={item} />
+          // </Grid>
         ))}
       </Grid>
     </Box>
