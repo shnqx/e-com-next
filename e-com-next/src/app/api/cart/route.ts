@@ -23,7 +23,7 @@ export async function GET(req: Request) {
   }
 
   const [cartRows] = await db.query(
-    `SELECT p.id, p.name, p.price, p.photo, c.quantity
+    `SELECT p.id, p.name, p.price, p.photo, c.quantity, c.id as cartId
      FROM carts c
      JOIN products p ON c.product_id = p.id
      WHERE c.user_id = ?`,
