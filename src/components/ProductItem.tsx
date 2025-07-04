@@ -49,42 +49,51 @@ export default function ProductItem({ item }: ItemProps) {
   };
 
   return (
-    <Card>
-      {item.photo && (
-        <CardMedia
-          component="img"
-          height="140"
-          image={item.photo}
-          alt={item.name}
+    <div
+      style={{ cursor: 'pointer' }}
+      onClick={() => window.location.href = `/product/${item.id}`}
+    >
+      <Card>
+        {item.photo && (
+          <CardMedia
+            component="img"
+            height="140"
+            image={item.photo}
+            alt={item.name}
+          />
+        )}
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            {item.name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {item.description}
+          </Typography>
+          <Typography sx={{ mt: 1, mb: 1 }}>
+            Цена: {item.price} руб.
+          </Typography>
+          <Box>
+            {/* Обработчик остановки всплытия */}
+            <Button
+              variant="outlined"
+              startIcon={<AddShoppingCartIcon color="primary" />}
+              onClick={(e) => {
+                e.stopPropagation(); // чтобы клик по кнопке не вызвал переход
+                addToCart(item.id);
+              }}
+            >
+              В корзину
+            </Button>
+          </Box>
+        </CardContent>
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={2000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          message={snackbar.message}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         />
-      )}
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          {item.name}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {item.description}
-        </Typography>
-        <Typography sx={{ mt: 1, mb: 1 }}>
-          Цена: {item.price} руб.
-        </Typography>
-        <Box>
-          <Button
-            variant="outlined"
-            startIcon={<AddShoppingCartIcon color="primary" />}
-            onClick={() => addToCart(item.id)}
-          >
-            В корзину
-          </Button>
-        </Box>
-      </CardContent>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={2000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        message={snackbar.message}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-      />
-    </Card>
+      </Card>
+    </div>
   );
 }
