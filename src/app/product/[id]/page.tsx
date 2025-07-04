@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation'; // для Next.js 13+ app directory
+import { useParams } from 'next/navigation';
 import { Container, Snackbar, Button, Typography, CircularProgress } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import { useAuth } from "@/app/api/auth/hooks/useAuth";
@@ -15,7 +15,7 @@ interface Product {
 
 export default function ProductPage() {
   const params = useParams();
-  const productId = params.id as string; // получаем id из маршрута
+  const productId = params.id as string;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,24 +25,28 @@ export default function ProductPage() {
   const ECOMNEXT_CART_KEY = "ecomnext_cart";
 
   const productsFetch = async () => {
-    // Загружаем данные о продукте по id
-    const res = await fetch(`/api/products/${productId}`, { method: 'GET' })
-      .then(res => {
-        if (!res.ok) throw new Error('Ошибка загрузки товара');
-        return res.json();
-      })
-      .then((data: Product) => {
-        setProduct(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }
+    try {
+
+      const res = await fetch(`/api/products/${productId}`);
+
+      if (!res.ok) {
+        const errorData = await res.json(); 
+        throw new Error(errorData.message || 'Ошибка загрузки товара');
+      }
+
+      const data: Product = await res.json();
+      setProduct(data);
+    } catch (err: any) { 
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    productsFetch();
+    if (productId) { 
+      productsFetch();
+    }
   }, [productId]);
 
   if (loading) {
@@ -73,7 +77,6 @@ export default function ProductPage() {
     const userId = user?.id;
 
     if (userId) {
-      // Пользователь авторизован — пишем в базу через API
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,17 +85,19 @@ export default function ProductPage() {
       if (res.ok) {
         setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
       } else {
-        setSnackbar({ open: true, message: "Ошибка при добавлении в корзину" });
+        const errorData = await res.json();
+        setSnackbar({ open: true, message: errorData.message || "Ошибка при добавлении в корзину" });
       }
     } else {
-      // Гость — сохраняем в localStorage
-      const cart = JSON.parse(localStorage.getItem(ECOMNEXT_CART_KEY) || "[]");
-      if (!cart.includes(id)) {
-        cart.push(id);
-        localStorage.setItem(ECOMNEXT_CART_KEY, JSON.stringify(cart));
-        setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
-      } else {
-        setSnackbar({ open: true, message: "Товар уже в корзине!" });
+      if (typeof window !== 'undefined') { 
+        const cart = JSON.parse(localStorage.getItem(ECOMNEXT_CART_KEY) || "[]");
+        if (!cart.includes(id)) {
+          cart.push(id);
+          localStorage.setItem(ECOMNEXT_CART_KEY, JSON.stringify(cart));
+          setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
+        } else {
+          setSnackbar({ open: true, message: "Товар уже в корзине!" });
+        }
       }
     }
   };
@@ -100,27 +105,22 @@ export default function ProductPage() {
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>{product.name}</Typography>
-      {product.photo && (
-        <img src={product.photo} alt={product.name} style={{ maxWidth: '100%', height: 'auto' }} />
-      )}
-      <Typography variant="body1" sx={{ mt: 2 }}>{product.description}</Typography>
-      <Typography variant="h6" sx={{ mt: 2 }}>Цена: {product.price} руб.</Typography>
+      <img src={product.photo} alt={product.name} style={{ maxWidth: '100%', height: 'auto', marginBottom: '20px' }} />
+      <Typography variant="h6">{product.price} руб</Typography>
+      <Typography variant="body1">{product.description}</Typography>
       <Button
-        variant="outlined"
-        startIcon={<AddShoppingCartIcon color="primary" />}
-        onClick={(e) => {
-          e.stopPropagation(); // чтобы клик по кнопке не вызвал переход
-          addToCart(product.id);
-        }}
+        variant="contained"
+        startIcon={<AddShoppingCartIcon />}
+        onClick={() => addToCart(product.id)}
       >
-        В корзину
+        Добавить в корзину
       </Button>
+
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={2000}
+        autoHideDuration={3000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         message={snackbar.message}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       />
     </Container>
   );

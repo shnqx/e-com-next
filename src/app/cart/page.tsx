@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/api/auth/hooks/useAuth";
-import { Table, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from "@mui/material";
+import { Table, Button, IconButton, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from "@mui/icons-material/Remove"
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: number;
@@ -20,6 +21,7 @@ export default function Cart() {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState<{ [id: number]: number }>({});
+  const router = useRouter();
 
   async function fetchCart() {
     if (user) {
@@ -131,6 +133,8 @@ export default function Cart() {
               <TableCell />
               <TableCell align="right"><b>Итого:</b></TableCell>
               <TableCell><b>{total} руб.</b></TableCell>
+              <TableCell />
+              <TableCell><Button variant="outlined" onClick={() => router.push(`/checkout?total=${total}`)}>Перейти к оплате</Button></TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { NextRequest } from "next/server"; 
+import { NextRequest } from "next/server";
 
 export async function GET(
-  request: NextRequest, 
-  { params }: { params: { id: string } } 
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string[] }> },
 ) {
   try {
- 
-    const { id } = params;
+    const id = (await params).id;
 
     const [rows]: any[] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
 
@@ -19,6 +18,6 @@ export async function GET(
     return NextResponse.json(rows[0]);
   } catch (error) {
     console.error('Ошибка в API:', error);
-    return NextResponse.json({ message: "Ошибка сервера" }, { status: 500 });
+    return NextResponse.json({ message: "Ошибка сервера при загрузке товара" }, { status: 500 });
   }
 }
