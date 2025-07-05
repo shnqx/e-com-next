@@ -5,13 +5,14 @@ import { Table, Button, IconButton, TableBody, TableCell, TableContainer, TableH
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from "@mui/icons-material/Remove"
 import { useRouter } from 'next/navigation';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Product {
   id: number;
   name: string;
   price: number;
   photo?: string;
-  quantity?: number; // для авторизованных
+  quantity: number; // для авторизованных
   cartId?: number;
 }
 
@@ -95,6 +96,17 @@ export default function Cart() {
     }
   }
 
+  const deleteCart = async (cartId: number | undefined) => {
+    const res = await fetch("/api/cart_delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cartId }),
+    });
+    if (res.ok) {
+      fetchCart();
+    }
+  }
+
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 4 }}>
       <Typography variant="h4" mb={2}>Корзина</Typography>
@@ -109,6 +121,7 @@ export default function Cart() {
               <TableCell>Кол-во</TableCell>
               <TableCell></TableCell>
               <TableCell>Сумма</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,10 +134,11 @@ export default function Cart() {
                 </TableCell>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>{item.price} руб.</TableCell>
-                <TableCell align="right"><IconButton onClick={() => decrease(item.cartId)}><RemoveIcon /></IconButton></TableCell>
+                <TableCell align="right"><IconButton onClick={item.quantity > 1 ? () => decrease(item.cartId) : () => deleteCart(item.cartId)}><RemoveIcon /></IconButton></TableCell>
                 <TableCell align="center">{quantities[item.id] || 1}</TableCell>
                 <TableCell align="left"><IconButton onClick={() => increase(item.cartId)}><AddIcon /></IconButton></TableCell>
                 <TableCell>{Number(item.price) * (quantities[item.id] || 1)} руб.</TableCell>
+                <TableCell align="center"><IconButton onClick={() => deleteCart(item.cartId)}><DeleteIcon/></IconButton></TableCell>
               </TableRow>
             ))}
             <TableRow>
