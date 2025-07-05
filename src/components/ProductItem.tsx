@@ -53,32 +53,52 @@ export default function ProductItem({ item }: ItemProps) {
       style={{ cursor: 'pointer' }}
       onClick={() => window.location.href = `/product/${item.id}`}
     >
-      <Card>
+      <Card
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          maxWidth: 345,
+          margin: 'auto',
+        }}
+      >
         {item.photo && (
           <CardMedia
             component="img"
             height="140"
             image={item.photo}
             alt={item.name}
+            sx={{ objectFit: 'cover' }}
           />
         )}
-        <CardContent>
+        <CardContent sx={{ flexGrow: 1 }}>
           <Typography variant="h6" gutterBottom>
             {item.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              display: '-webkit-box',
+              overflow: 'hidden',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              mb: 1,
+              minHeight: '2.5em',
+            }}
+          >
             {item.description}
           </Typography>
           <Typography sx={{ mt: 1, mb: 1 }}>
             Цена: {item.price} руб.
           </Typography>
           <Box>
-            {/* Обработчик остановки всплытия */}
             <Button
               variant="outlined"
               startIcon={<AddShoppingCartIcon color="primary" />}
               onClick={(e) => {
-                e.stopPropagation(); // чтобы клик по кнопке не вызвал переход
+                e.stopPropagation();
                 addToCart(item.id);
               }}
             >
