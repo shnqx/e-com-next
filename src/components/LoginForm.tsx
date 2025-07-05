@@ -51,6 +51,7 @@ export default function LoginForm() {
       sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, border: "1px solid #eee", borderRadius: 2 }}
     >
       <Typography variant="h5" mb={2}>Вход</Typography>
+      <Typography variant="h6" mb={2}>Данные для теста логин: test@test.ru пароль: test    </Typography>
       {msg && <Alert severity={msg === "Вход выполнен!" ? "success" : "error"} sx={{ mb: 2 }}>{msg}</Alert>}
       <TextField
         label="Email"

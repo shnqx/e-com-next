@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardMedia, Typography, Button, Box, Snackbar } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { useAuth } from "@/app/api/auth/hooks/useAuth";
+import { useRouter } from 'next/navigation';
 
 interface ItemProps {
   item: {
@@ -19,6 +20,7 @@ const ECOMNEXT_CART_KEY = "ecomnext_cart";
 export default function ProductItem({ item }: ItemProps) {
   const { user } = useAuth();
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
+  const router = useRouter();
 
   const addToCart = async (id: number) => {
     const userId = user?.id;
@@ -36,15 +38,7 @@ export default function ProductItem({ item }: ItemProps) {
         setSnackbar({ open: true, message: "Ошибка при добавлении в корзину" });
       }
     } else {
-      // Гость — сохраняем в localStorage
-      const cart = JSON.parse(localStorage.getItem(ECOMNEXT_CART_KEY) || "[]");
-      if (!cart.includes(id)) {
-        cart.push(id);
-        localStorage.setItem(ECOMNEXT_CART_KEY, JSON.stringify(cart));
-        setSnackbar({ open: true, message: "Товар добавлен в корзину!" });
-      } else {
-        setSnackbar({ open: true, message: "Товар уже в корзине!" });
-      }
+      router.push("/login")
     }
   };
 
@@ -101,6 +95,7 @@ export default function ProductItem({ item }: ItemProps) {
                 e.stopPropagation();
                 addToCart(item.id);
               }}
+
             >
               В корзину
             </Button>
